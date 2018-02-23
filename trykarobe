@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+import sys
+import numbers
+
+[k,train,test] = sys.argv[1:4]
+
+df_train = pd.read_csv(train,header = None)
+df_test = pd.read_csv(test,header = None)
+
+while (len(df_test.columns)>len(df_train.columns)):
+    df_test = df_test.loc[:,:df_test.columns[-2]]
+
+def dist(x,y):
+    dist = 0
+    for i in range(len(x)-1):
+        if isinstance(x[i], numbers.Number):
+            dist = dist + (x[i]-y[i]) ** 2
+        elif x[i] != y[i]:
+            dist = dist + 1
+    return np.sqrt(dist)
+
+def mode(x):
+    return max(set(x), key=x.count)
+
+
+result = []
+for xy_test in range(len(df_test)):
+    distance_list = []
+    for xy_train in range(len(df_train)):
+        distance_list.append(dist(df_test.loc[xy_test,:],df_train.loc[xy_train,:]))
+    kNN_rows = np.array(distance_list).argsort()[:int(k)]
+    kNN_y = df_train.loc[kNN_rows, df_train.columns[-1]]
+    result.append(mode(kNN_y.tolist()))
+
+
+df_test.loc[:,len(df_test)] = result
+df_test.to_csv(test,header=None, index=None, sep=',', mode='w')
+
+
+print(df_test.values)
