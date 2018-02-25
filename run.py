@@ -30,6 +30,7 @@ test_df = pd.read_csv(test, header=None)
 train_df_withoutclass = train_df.loc[:, train_df.columns != 15]
 test_df_withoutclass = test_df.loc[:, test_df.columns != 15]
 
+'''Calculate distance of test set with training set'''
 new_column_withpredictions = []
 for i in range(len(test_df)):
     Distance_df = []
@@ -44,3 +45,11 @@ for i in range(len(test_df)):
 test_df.loc[:,test_df.columns[-1]+1] = new_column_withpredictions
 test_df.to_csv( test +".output",header=None, index=None, sep=',', mode='w')
 
+'''Calculate accuracy'''
+count = 0
+for i in range(len(test_df)):
+    if(test_df.iloc[i,-1] == test_df.iloc[i,-2]):
+        count += 1
+accuracy = count/len(test_df) * 100
+print("Accuracy : ")
+print(accuracy)
